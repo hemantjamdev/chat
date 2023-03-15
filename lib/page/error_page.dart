@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
-class ErrorPage extends StatefulWidget {
-  const ErrorPage({Key? key}) : super(key: key);
 
-  @override
-  State<ErrorPage> createState() => _ErrorPageState();
-}
+class ErrorPage extends StatelessWidget {
+  const ErrorPage({super.key});
 
-class _ErrorPageState extends State<ErrorPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold(
+      body: Center(
+        child: Text(
+          '404 Not Found',
+          style: TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
   }
 }

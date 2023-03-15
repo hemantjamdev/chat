@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(ChatApp());
+  runApp(const ChatApp());
 }
 
 class ChatApp extends StatelessWidget {
