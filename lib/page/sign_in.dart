@@ -1,4 +1,6 @@
+import 'package:chat/provider/signin_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -8,17 +10,14 @@ class SignInPage extends StatefulWidget {
 }
 
 class SignInPageState extends State<SignInPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final FocusNode _emailFocus = FocusNode();
-  final FocusNode _passFocus = FocusNode();
+  final SignInProvider sProvider = SignInProvider();
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _emailFocus.dispose();
-    _passFocus.dispose();
+    sProvider.emailController.dispose();
+    sProvider.passwordController.dispose();
+    sProvider.emailFocus.dispose();
+    sProvider.passFocus.dispose();
     super.dispose();
   }
 
@@ -31,57 +30,66 @@ class SignInPageState extends State<SignInPage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                focusNode: _emailFocus,
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
+          child: Consumer<SignInProvider>(builder: (context, sProvider, child) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  focusNode: sProvider.emailFocus,
+                  controller: sProvider.emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                  onSubmitted: (String email) {
+                    FocusScope.of(context).requestFocus(sProvider.passFocus);
+                  },
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.emailAddress,
                 ),
-                onSubmitted: (String email) {
-                  FocusScope.of(context).requestFocus(_passFocus);
-                },
-                textInputAction: TextInputAction.next,
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                focusNode: _passFocus,
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 16.0),
+                TextField(
+                  focusNode: sProvider.passFocus,
+                  controller: sProvider.passwordController,
+                 // obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (String email){
+                    sProvider.signIn(context: context);
+                  },
                 ),
-                textInputAction: TextInputAction.done,
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/sign_up');
-                },
-                child: const Text('Sign In'),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don't have an account ? "),
-                    GestureDetector(
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () {
+                   sProvider.signIn(context: context);
+                  },
+                  child: sProvider.isLoading
+                      ? SizedBox(child: CircularProgressIndicator())
+                      : Text('Sign In'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Don't have an account ? "),
+                      GestureDetector(
                         onTap: () => Navigator.pushNamed(context, '/sign_up'),
                         child: const Text(
                           'Sign Up',
                           style: TextStyle(color: Colors.blue),
-                        ))
-                  ],
-                ),
-              )
-            ],
-          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            );
+          }),
         ),
       ),
     );

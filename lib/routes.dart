@@ -1,3 +1,4 @@
+import 'package:chat/page/chat_page.dart';
 import 'package:chat/page/chat_room.dart';
 import 'package:chat/page/complete_profile.dart';
 import 'package:chat/page/error_page.dart';
@@ -11,7 +12,7 @@ class Routes {
   static Route? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (context) => const SignInPage());
+        return MaterialPageRoute(builder: (context) => const SplashPage());
       case '/home':
         return MaterialPageRoute(builder: (context) => const HomePage());
       case '/sign_up':
@@ -19,9 +20,12 @@ class Routes {
       case '/sign_in':
         return MaterialPageRoute(builder: (context) => const SignInPage());
       case '/complete_profile':
-        return MaterialPageRoute(builder: (context) => const CompleteProfilePage());
+        return MaterialPageRoute(
+            builder: (context) => const CompleteProfilePage());
       case '/chat_room':
         return MaterialPageRoute(builder: (context) => const ChatRoomPage());
+      case '/chat_list':
+        return MaterialPageRoute(builder: (context) => const ChatPage());
       default:
         return MaterialPageRoute(builder: (context) => const ErrorPage());
     }
