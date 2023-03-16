@@ -1,4 +1,5 @@
 import 'package:chat/model/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -6,40 +7,58 @@ import 'package:fluttertoast/fluttertoast.dart';
 class SignInProvider extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final FocusNode emailFocus = FocusNode();
+
   final FocusNode passFocus = FocusNode();
   bool isLoading = false;
+  bool obSecure = true;
+  UserModel userModel = UserModel();
 
-  signIn(
-      {
-      required BuildContext context}) async {
-
-    if (emailController.text.isNotEmpty &&
-        passwordController.text.isNotEmpty) {
-
-
-
-
-
-   // UserCredential? credential;
-    isLoading = true;
-    try {
-       await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: emailController.text, password: passwordController.text)
-          .then((value) {
-        if (value.user != null) {
-          //UserModel.fromMap(value.user as Map<String, dynamic>);
-          Navigator.pushNamed(context, '/chat_list');
-          print("${UserModel().uid.toString()}-----------------");
-          print("${UserModel().name.toString()}-----------------");
-        }
-        return null;
-      });
-    } on FirebaseAuthException catch (e) {
-      print("this is pass${passwordController.text}-----------------");
-      Fluttertoast.showToast(msg: e.code);
-    }
-    isLoading = false;
+  void changeObSecure() {
+    obSecure = !obSecure;
     notifyListeners();
-  }}
+  }
+
+  void loading(bool load) {
+    isLoading = load;
+    notifyListeners();
+  }
+
+  Future<bool?> signIn({required BuildContext context}) async {
+    FocusScope.of(context).unfocus();
+    loading(true);
+    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      UserCredential? credential;
+
+      try {
+        credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: emailController.text, password: passwordController.text);
+
+        Fluttertoast.showToast(msg: 'Sign In successful');
+
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(credential.user!.uid)
+            .get();
+        DocumentSnapshot snap = userData;
+
+        userModel = UserModel.fromMap(snap.data() as Map<String, dynamic>);
+        loading(false);
+        return true;
+      } on FirebaseAuthException catch (e) {
+        Fluttertoast.showToast(msg: e.code);
+        loading(false);
+        return false;
+      }
+    }
+    loading(false);
+    return false;
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    passFocus.dispose();
+    super.dispose();
+  }
 }

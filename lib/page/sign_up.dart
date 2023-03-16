@@ -1,6 +1,5 @@
 import 'package:chat/provider/signup_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -11,17 +10,15 @@ class SignUpPage extends StatefulWidget {
 }
 
 class SignUpPageState extends State<SignUpPage> {
-  SignUpProvider signUpProvider = SignUpProvider();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   void dispose() {
-    signUpProvider.emailController.dispose();
-    signUpProvider.passwordController.dispose();
-    signUpProvider.cPasswordController.dispose();
-    signUpProvider.emailFocus.dispose();
-    signUpProvider.emailFocus.dispose();
-    signUpProvider.emailFocus.dispose();
-    signUpProvider.passFocus.dispose();
-    signUpProvider.confirmPasswordFocus.dispose();
     super.dispose();
   }
 
@@ -37,91 +34,131 @@ class SignUpPageState extends State<SignUpPage> {
             padding: const EdgeInsets.all(16.0),
             child:
                 Consumer<SignUpProvider>(builder: (context, provider, child) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextField(
-                    focusNode: signUpProvider.emailFocus,
-                    controller: signUpProvider.emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        const pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+                        final regExp = RegExp(pattern);
+                        if (!regExp.hasMatch(value)) {
+                          return 'Please enter a valid email address';
+                        }
+                        return null;
+                      },
+                      //  focusNode: provider.emailFocus,
+                      controller: provider.emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                      onFieldSubmitted: (String email) {
+                        FocusScope.of(context).requestFocus(provider.passFocus);
+                      },
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.emailAddress,
                     ),
-                    onSubmitted: (String text) {
-                      signUpProvider.emailFocus.unfocus();
-                      FocusScope.of(context)
-                          .requestFocus(signUpProvider.passFocus);
-                    },
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextField(
-                    focusNode: signUpProvider.passFocus,
-                    controller: signUpProvider.passwordController,
-                   // obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      obscureText: provider.obSecure,
+                      focusNode: provider.passFocus,
+                      controller: provider.passwordController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Password cannot be empty';
+                        } else if (value.length < 8) {
+                          return 'Password must be at least 8 characters long';
+                        }
+                        return null; // return null if the input is valid
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Password',
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                              onPressed: () {
+                                provider.changeObSecure();
+                              },
+                              icon: Icon(provider.obSecure
+                                  ? Icons.visibility
+                                  : Icons.visibility_off))),
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (String email) {
+                        FocusScope.of(context)
+                            .requestFocus(provider.cPasswordFocus);
+                      },
                     ),
-                    onSubmitted: (String text) {
-                      signUpProvider.passFocus.unfocus();
-                      FocusScope.of(context)
-                          .requestFocus(signUpProvider.confirmPasswordFocus);
-                    },
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextField(
-                    focusNode: signUpProvider.confirmPasswordFocus,
-                    controller: signUpProvider.cPasswordController,
-                   // obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Confirm Password',
-                      border: OutlineInputBorder(),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      obscureText: provider.cobSecure,
+                      focusNode: provider.cPasswordFocus,
+                      controller: provider.cPasswordController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Password cannot be empty';
+                        } else if (value.length < 8) {
+                          return 'Password must be at least 8 characters long';
+                        } else if (value !=
+                            provider.passwordController.text.trim()) {
+                          return 'Password not match';
+                        }
+                        return null; // return null if the input is valid
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Confirm Password',
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                              onPressed: () {
+                                provider.changeCObSecure();
+                              },
+                              icon: Icon(provider.cobSecure
+                                  ? Icons.visibility
+                                  : Icons.visibility_off))),
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (String email) {
+                        FocusScope.of(context).unfocus();
+                      },
                     ),
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (String text) {
-                      text == signUpProvider.passwordController.text
-                          ? print("done")
-                          : Fluttertoast.showToast(
-                              msg: "enter same pass for both");
-                    },
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (signUpProvider.emailController.text.isNotEmpty &&
-                          signUpProvider.passwordController.text.isNotEmpty) {
-                        signUpProvider.signUp(
-                            email: signUpProvider.emailController.text,
-                            pass: signUpProvider.passwordController.text,
-                            context: context);
-                      } else {
-                        Fluttertoast.showToast(
-                            msg: "enter email and passs both");
-                      } // Navigator.pushNamed(context, '/complete_profile');
-                    },
-                    child: const Text('Sign Up'),
-                  ),
-                  const SizedBox(height: 16.0),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Already have an account ? "),
-                        GestureDetector(
-                            onTap: () =>
-                                Navigator.pushNamed(context, '/sign_in'),
-                            child: const Text(
-                              'Sign Ip',
-                              style: TextStyle(color: Colors.blue),
-                            ))
-                      ],
+                    const SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          provider.signUp(context: context).then((value) {
+                            if (value!) {
+                              Navigator.pushNamed(context, '/complete_profile',
+                                  arguments: provider.newUser);
+                            }
+                          });
+                        }
+                      },
+                      child: provider.isLoading
+                          ? const SizedBox(child: CircularProgressIndicator())
+                          : const Text('Sign Up'),
                     ),
-                  )
-                ],
+                    const SizedBox(height: 16.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Already have an account ? "),
+                          GestureDetector(
+                              onTap: () =>
+                                  Navigator.pushNamed(context, '/sign_in'),
+                              child: const Text(
+                                'Sign Ip',
+                                style: TextStyle(color: Colors.blue),
+                              ))
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               );
             }),
           ),

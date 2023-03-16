@@ -1,24 +1,26 @@
-
+import 'package:chat/model/user.dart';
 import 'package:chat/page/camera_page.dart';
 import 'package:chat/page/chat_list.dart';
 import 'package:chat/page/status_page.dart';
 import 'package:flutter/material.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+class ChatHomePage extends StatefulWidget {
+  final UserModel userModel;
+
+  const ChatHomePage({super.key, required this.userModel});
 
   @override
-  ChatPageState createState() => ChatPageState();
+  ChatHomePageState createState() => ChatHomePageState();
 }
 
-class ChatPageState extends State<ChatPage>
+class ChatHomePageState extends State<ChatHomePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
   }
 
   @override
@@ -45,9 +47,9 @@ class ChatPageState extends State<ChatPage>
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(icon: Icon(Icons.camera_alt)),
+            Tab(icon: Icon(Icons.person)),
             Tab(text: 'CHATS'),
-            Tab(text: 'STATUS'),
+            Tab(text: 'SEARCH'),
           ],
         ),
       ),
@@ -61,7 +63,7 @@ class ChatPageState extends State<ChatPage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: Theme.of(context).accentColor,
+
         child: const Icon(Icons.chat),
       ),
     );

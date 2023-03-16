@@ -1,3 +1,4 @@
+import 'package:chat/provider/complete_profile_provider.dart';
 import 'package:chat/provider/signin_provider.dart';
 import 'package:chat/provider/signup_provider.dart';
 import 'package:chat/routes.dart';
@@ -19,16 +20,17 @@ class ChatApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<SignInProvider>(
-          create: (context) => SignInProvider(),
-        ),
+            create: (context) => SignInProvider()),
         ChangeNotifierProvider<SignUpProvider>(
-          create: (context) => SignUpProvider(),
-        ),
+            create: (context) => SignUpProvider()),
+        ChangeNotifierProvider<CompleteProfileProvider>(
+            create: (context) => CompleteProfileProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(useMaterial3: false,primaryColor: Color(0xFF075E54),
-          accentColor: Color(0xFF25D366),),
+        theme: ThemeData(
+          useMaterial3: true,
+        ),
         onGenerateRoute: Routes.onGenerateRoute,
       ),
     );
