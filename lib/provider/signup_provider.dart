@@ -1,4 +1,3 @@
-
 import 'package:chat/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,10 +15,13 @@ class SignUpProvider extends ChangeNotifier {
   bool obSecure = true;
   bool cobSecure = true;
   bool isLoading = false;
-void loading(bool load){
-  isLoading=load;
-  notifyListeners();
-}
+  UserCredential? credential;
+
+  void loading(bool load) {
+    isLoading = load;
+    notifyListeners();
+  }
+
   void changeObSecure() {
     obSecure = !obSecure;
     notifyListeners();
@@ -31,18 +33,16 @@ void loading(bool load){
   }
 
   Future<bool?> signUp({required BuildContext context}) async {
-    UserCredential? credential;
     loading(true);
     if (emailController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         passwordController.text.trim() == cPasswordController.text.trim()) {
       try {
-        //isLoading = true;
         credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: emailController.text.trim(),
             password: passwordController.text.trim());
-        if (credential.user != null) {
-          await uploadData(credential);
+        if (credential!.user != null) {
+          await uploadData(credential!);
         } else {
           Fluttertoast.showToast(msg: 'something went wrong !');
         }
@@ -67,9 +67,7 @@ void loading(bool load){
         .doc(uid)
         .set(newUser.toMap());
 
-  //  isLoading = false;
     Fluttertoast.showToast(msg: 'SignUp successful');
-   // notifyListeners();
   }
 
   @override

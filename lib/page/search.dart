@@ -1,7 +1,16 @@
+import 'package:chat/model/chat_room.dart';
+import 'package:chat/model/user.dart';
+import 'package:chat/page/chat_room.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  final UserModel currentUser;
+  final User firebaseUser;
+
+  const SearchPage(
+      {super.key, required this.currentUser, required this.firebaseUser});
 
   @override
   SearchPageState createState() => SearchPageState();
@@ -9,63 +18,97 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _cityNames = [
-    'New York',
-    'Los Angeles',
-    'Chicago',
-    'Houston',
-    'Phoenix',
-    'Philadelphia',
-    'San Antonio',
-    'San Diego',
-    'Dallas',
-    'San Jose',
-    'Austin',
-    'Jacksonville',
-    'Fort Worth',
-    'Columbus',
-    'San Francisco',
-    'Charlotte',
-    'Indianapolis',
-    'Seattle',
-    'Denver',
-    'Washington'
-  ];
-  List<String> _filteredCityNames = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredCityNames = _cityNames;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          decoration: const InputDecoration(
-            hintText: 'Search',
-            border: InputBorder.none,
+      appBar: AppBar(title: const Text('Search Bar')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                hintText: 'Enter User Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
           ),
-          onChanged: (value) {
-            setState(() {
-              _filteredCityNames = _cityNames
-                  .where((city) =>
-                      city.toLowerCase().contains(value.toLowerCase()))
-                  .toList();
-            });
-          },
-        ),
-      ),
-      body: ListView.builder(
-        itemCount: _filteredCityNames.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(_filteredCityNames[index]),
-          );
-        },
+          ElevatedButton(
+              onPressed: () {
+                setState(() {});
+              },
+              child: const Text("Search")),
+          Expanded(
+            child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .where('name', isEqualTo: _searchController.text)
+                    .where('name', isNotEqualTo: [
+                  "",
+                  widget.currentUser.name
+                ]).snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    if (snapshot.hasData) {
+                      QuerySnapshot doc = snapshot.data as QuerySnapshot;
+                      if (doc.docs.isNotEmpty) {
+                        return ListView.builder(
+                            itemCount: doc.size,
+                            itemBuilder: (context, int index) {
+                              Map<String, dynamic> userData = doc.docs[index]
+                                  .data() as Map<String, dynamic>;
+
+                              UserModel searchedUser =
+                                  UserModel.fromMap(userData);
+                              return ListTile(
+                                leading: searchedUser.profilePic.toString() !=
+                                        ""
+                                    ? CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            searchedUser.profilePic.toString()),
+                                      )
+                                    : const CircleAvatar(
+                                        child: Icon(Icons.person)),
+                                title: Text(searchedUser.name.toString()),
+                                subtitle: Text(searchedUser.email.toString()),
+                                trailing:
+                                    const Icon(Icons.keyboard_arrow_right),
+                                onTap: () {
+                                  ChatRoomModel chatRoomModel = ChatRoomModel(
+                                      chatRoomId: "", participants: ["", ""]);
+
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => ChatRoomPage(
+                                                currentUser: widget.currentUser,
+                                                targetUser: searchedUser,
+                                                chatRoom: chatRoomModel,
+                                                firebaseUser:
+                                                    widget.firebaseUser,
+                                              )));
+                                },
+                              );
+                            });
+                      } else {
+                        return const Center(child: Text("no result found"));
+                      }
+                    } else {
+                      return const Center(child: Text("no result found"));
+                    }
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                }),
+          )
+        ],
       ),
     );
   }

@@ -1,13 +1,18 @@
 import 'package:chat/model/user.dart';
 import 'package:chat/page/camera_page.dart';
 import 'package:chat/page/chat_list.dart';
+import 'package:chat/page/search.dart';
+import 'package:chat/page/sign_up.dart';
 import 'package:chat/page/status_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatHomePage extends StatefulWidget {
-  final UserModel userModel;
+  final UserModel currentUser;
+  final User firebaseUser;
 
-  const ChatHomePage({super.key, required this.userModel});
+  const ChatHomePage(
+      {super.key, required this.currentUser, required this.firebaseUser});
 
   @override
   ChatHomePageState createState() => ChatHomePageState();
@@ -33,6 +38,13 @@ class ChatHomePageState extends State<ChatHomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (_) => SignUpPage()));
+          },
+          icon: Icon(Icons.add),
+        ),
         title: const Text('WhatsApp'),
         actions: [
           IconButton(
@@ -62,8 +74,14 @@ class ChatHomePageState extends State<ChatHomePage>
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => SearchPage(
+                      currentUser: widget.currentUser,
+                      firebaseUser: widget.firebaseUser)));
+        },
         child: const Icon(Icons.chat),
       ),
     );

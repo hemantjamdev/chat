@@ -13,6 +13,7 @@ class CompleteProfileProvider extends ChangeNotifier {
   final TextEditingController fullNameController = TextEditingController();
   bool isLoading = false;
   int progress = 0;
+  UserModel currentUser = UserModel();
 
   changeProgress(int number) {
     progress = number;
@@ -101,8 +102,13 @@ class CompleteProfileProvider extends ChangeNotifier {
 
       String fullName = fullNameController.text.trim();
 
-      userModel.profilePic = imageUrl;
-      userModel.name = fullName;
+      currentUser = UserModel(
+          uid: userModel.uid,
+          name: fullName,
+          profilePic: imageUrl,
+          email: userModel.email);
+      // userModel.profilePic = imageUrl;
+      //  userModel.name = fullName;
 
       await FirebaseFirestore.instance
           .collection("users")

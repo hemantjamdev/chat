@@ -1,6 +1,12 @@
 import 'dart:async';
+import 'package:chat/constants/firebase_helper.dart';
+import 'package:chat/model/user.dart';
+import 'package:chat/page/home.dart';
+import 'package:chat/page/sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -9,7 +15,8 @@ class SplashPage extends StatefulWidget {
   SplashPageState createState() => SplashPageState();
 }
 
-class SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+class SplashPageState extends State<SplashPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
 
@@ -34,8 +41,32 @@ class SplashPageState extends State<SplashPage> with SingleTickerProviderStateMi
 
     // Wait for the animation to complete before navigating to the home page
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/home');
+      handleNavigate();
     });
+  }
+
+  handleNavigate() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        UserModel? userModel = await FirebaseHelper.getUserById(user.uid);
+        if (userModel != null) {
+          // ignore: use_build_context_synchronously
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => HomePage(
+                        currentUser: userModel,
+                        firebaseUser: user,
+                      )));
+        }
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const SignInPage()));
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:chat/page/complete_profile.dart';
 import 'package:chat/provider/signup_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -128,12 +129,22 @@ class SignUpPageState extends State<SignUpPage> {
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          provider.signUp(context: context).then((value) {
-                            if (value!) {
-                              Navigator.pushNamed(context, '/complete_profile',
-                                  arguments: provider.newUser);
-                            }
-                          });
+                          provider.signUp(context: context).then(
+                            (value) {
+                              if (value!) {
+                                //Map<String, dynamic> data = {};
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => CompleteProfilePage(
+                                        firebaseUser:
+                                            provider.credential!.user!,
+                                        currentUser: provider.newUser),
+                                  ),
+                                );
+                              }
+                            },
+                          );
                         }
                       },
                       child: provider.isLoading

@@ -1,7 +1,7 @@
+import 'package:chat/page/splash.dart';
 import 'package:chat/provider/complete_profile_provider.dart';
 import 'package:chat/provider/signin_provider.dart';
 import 'package:chat/provider/signup_provider.dart';
-import 'package:chat/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +31,8 @@ class ChatApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
         ),
-        onGenerateRoute: Routes.onGenerateRoute,
+       home: const SplashPage(),
+       // onGenerateRoute: Routes.onGenerateRoute,
       ),
     );
   }

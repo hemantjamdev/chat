@@ -12,7 +12,7 @@ class SignInProvider extends ChangeNotifier {
   bool isLoading = false;
   bool obSecure = true;
   UserModel userModel = UserModel();
-
+UserCredential? credential;
   void changeObSecure() {
     obSecure = !obSecure;
     notifyListeners();
@@ -27,7 +27,7 @@ class SignInProvider extends ChangeNotifier {
     FocusScope.of(context).unfocus();
     loading(true);
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      UserCredential? credential;
+     /* UserCredential? credential;*/
 
       try {
         credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -37,7 +37,7 @@ class SignInProvider extends ChangeNotifier {
 
         DocumentSnapshot userData = await FirebaseFirestore.instance
             .collection("users")
-            .doc(credential.user!.uid)
+            .doc(credential!.user!.uid)
             .get();
         DocumentSnapshot snap = userData;
 
