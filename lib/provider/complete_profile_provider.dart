@@ -113,7 +113,7 @@ class CompleteProfileProvider extends ChangeNotifier {
       await FirebaseFirestore.instance
           .collection("users")
           .doc(userModel.uid)
-          .set(userModel.toMap());
+          .set(currentUser.toMap());
 
       loading(false);
 

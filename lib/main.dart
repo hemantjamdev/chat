@@ -5,6 +5,9 @@ import 'package:chat/provider/signup_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
+Uuid uuid = const Uuid();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,8 +34,8 @@ class ChatApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
         ),
-       home: const SplashPage(),
-       // onGenerateRoute: Routes.onGenerateRoute,
+        home: const SplashPage(),
+        // onGenerateRoute: Routes.onGenerateRoute,
       ),
     );
   }

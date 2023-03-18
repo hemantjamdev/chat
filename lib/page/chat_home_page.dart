@@ -1,18 +1,22 @@
+import 'package:chat/model/chat_room.dart';
 import 'package:chat/model/user.dart';
-import 'package:chat/page/camera_page.dart';
+import 'package:chat/page/profile_page.dart';
 import 'package:chat/page/chat_list.dart';
-import 'package:chat/page/search.dart';
 import 'package:chat/page/sign_up.dart';
-import 'package:chat/page/status_page.dart';
+import 'package:chat/page/search_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatHomePage extends StatefulWidget {
   final UserModel currentUser;
   final User firebaseUser;
+  final ChatRoomModel? chatRoomModel;
 
   const ChatHomePage(
-      {super.key, required this.currentUser, required this.firebaseUser});
+      {super.key,
+      required this.currentUser,
+      required this.firebaseUser,
+      this.chatRoomModel});
 
   @override
   ChatHomePageState createState() => ChatHomePageState();
@@ -45,7 +49,10 @@ class ChatHomePageState extends State<ChatHomePage>
           },
           icon: Icon(Icons.add),
         ),
-        title: const Text('WhatsApp'),
+        title: ListTile(
+          title: Text(widget.currentUser.name ?? "not found"),
+          subtitle: Text(widget.currentUser.email ?? "not found"),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -67,13 +74,20 @@ class ChatHomePageState extends State<ChatHomePage>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          CameraPage(),
-          ChatListPage(),
-          StatusPage(),
+        children: [
+          ProfilePage(
+            currentUser: widget.currentUser,
+          ),
+          ChatListPage(
+            currentUser: widget.currentUser,
+            firebaseUser: widget.firebaseUser,
+          ),
+          SearchPage(
+              currentUser: widget.currentUser,
+              firebaseUser: widget.firebaseUser),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      /*floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
               context,
@@ -83,7 +97,7 @@ class ChatHomePageState extends State<ChatHomePage>
                       firebaseUser: widget.firebaseUser)));
         },
         child: const Icon(Icons.chat),
-      ),
+      ),*/
     );
   }
 }

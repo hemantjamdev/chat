@@ -1,7 +1,13 @@
+import 'dart:developer';
+
 import 'package:chat/model/chat_room.dart';
+import 'package:chat/model/message.dart';
 import 'package:chat/model/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../main.dart';
 
 class ChatRoomPage extends StatefulWidget {
   final UserModel targetUser;
@@ -21,18 +27,37 @@ class ChatRoomPage extends StatefulWidget {
 }
 
 class ChatRoomPageState extends State<ChatRoomPage> {
-  final List<Message> _messages = [
+  /*final List<Message> _messages = [
     Message(sender: 'John', text: 'Hi there!', isMe: false),
     Message(sender: 'Jane', text: 'Hey!', isMe: true),
     Message(sender: 'John', text: 'How are you?', isMe: false),
     Message(
         sender: 'Jane', text: 'I\'m good, thanks. How about you?', isMe: true),
     Message(sender: 'John', text: 'Doing well, thanks!', isMe: false),
-  ];
+  ];*/
   final TextEditingController _messageController = TextEditingController();
+
+  sendMessage() async {
+    MessageModel newMessage = MessageModel(
+        messageId: uuid.v1(),
+        sender: widget.currentUser.uid,
+        text: _messageController.text,
+        seen: false,
+        createdOn: Timestamp.now());
+    FirebaseFirestore.instance
+        .collection('chatrooms')
+        .doc(widget.chatRoom.chatRoomId)
+        .collection('messages')
+        .doc(newMessage.messageId)
+        .set(newMessage.toMap());
+    log('----- message collectin created-----');
+    _messageController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
+    log("------currrent user name--${widget.currentUser.name}");
+    log("------target  user name--${widget.targetUser.name}");
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -42,22 +67,54 @@ class ChatRoomPageState extends State<ChatRoomPage> {
                     backgroundImage:
                         NetworkImage(widget.targetUser.profilePic.toString()),
                   )
-                : const Icon(Icons.person)
+                : const Icon(Icons.person),
+            SizedBox(
+              width: 10,
+            ),
+            Text(widget.targetUser.name ?? "")
           ],
         ),
       ),
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (BuildContext context, int index) {
-                return MessageBubble(
-                  message: _messages[index],
-                );
-              },
-            ),
-          ),
+              child: StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('chatrooms')
+                .doc(widget.chatRoom.chatRoomId)
+                .collection("messages")
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasData) {
+                  //log('${snapshot.data!.docs.first.data().toString()}---------');
+                  QuerySnapshot? data = snapshot.data;
+                  if (data!.docs.isNotEmpty) {
+                    return ListView.builder(
+                        itemCount: data.docs.length,
+                        itemBuilder: (context, int index) {
+                          MessageModel message = MessageModel.fromMap(
+                              data.docs[index].data() as Map<String, dynamic>);
+                          return MessageBubble(
+                              message: message.text.toString(),
+                              senderId: message.sender.toString(),
+                              currentUserId: widget.currentUser.uid!);
+                        });
+                  } else {
+                    return const Center(child: Text('no message'));
+                  }
+                } else if (snapshot.hasError) {
+                  return const Center(child: Text('something went wrong'));
+                } else {
+                  return const Center(child: Text('no messages'));
+                }
+              } else {
+                return const Center(child: Text("no dat found"));
+              }
+            },
+          )),
+
+          /// search widget
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             decoration: const BoxDecoration(
@@ -78,13 +135,8 @@ class ChatRoomPageState extends State<ChatRoomPage> {
                 const SizedBox(width: 10.0),
                 ElevatedButton(
                   onPressed: () {
-                    String text = _messageController.text.trim();
-                    if (text.isNotEmpty) {
-                      setState(() {
-                        _messages.add(
-                            Message(sender: 'You', text: text, isMe: true));
-                        _messageController.clear();
-                      });
+                    if (_messageController.text.isNotEmpty) {
+                      sendMessage();
                     }
                   },
                   child: const Text('Send'),
@@ -98,60 +150,47 @@ class ChatRoomPageState extends State<ChatRoomPage> {
   }
 }
 
-class Message {
-  final String sender;
-  final String text;
-  final bool isMe;
-
-  Message({
-    required this.sender,
-    required this.text,
-    required this.isMe,
-  });
-}
-
 class MessageBubble extends StatelessWidget {
-  final Message message;
+  final String senderId;
+  final String message;
+  final String currentUserId;
 
-  const MessageBubble({super.key, required this.message});
+  const MessageBubble(
+      {super.key,
+      required this.message,
+      required this.senderId,
+      required this.currentUserId});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
       child: Row(
-        mainAxisAlignment:
-            message.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: currentUserId == senderId
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
-          if (!message.isMe)
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: Text(
-                message.sender,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
           Container(
             padding:
                 const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
             decoration: BoxDecoration(
-              color: message.isMe ? Colors.blue : Colors.grey[300],
+              color: currentUserId == senderId ? Colors.blue : Colors.grey[300],
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(10.0),
                 topRight: const Radius.circular(10.0),
-                bottomLeft: message.isMe
+                bottomLeft: currentUserId == senderId
                     ? const Radius.circular(10.0)
                     : const Radius.circular(0.0),
-                bottomRight: message.isMe
+                bottomRight: currentUserId == senderId
                     ? const Radius.circular(0.0)
                     : const Radius.circular(10.0),
               ),
             ),
-            child: Text(message.text,
+            child: Text(message,
                 style: TextStyle(
-                    color: message.isMe ? Colors.white : Colors.green)),
+                    color: currentUserId == senderId
+                        ? Colors.white
+                        : Colors.green)),
           )
         ],
       ),

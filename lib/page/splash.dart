@@ -66,6 +66,8 @@ class SplashPageState extends State<SplashPage>
       }
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const SignInPage()));
     }
   }
 
