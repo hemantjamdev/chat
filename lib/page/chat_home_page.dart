@@ -10,13 +10,13 @@ import 'package:flutter/material.dart';
 class ChatHomePage extends StatefulWidget {
   final UserModel currentUser;
   final User firebaseUser;
-  final ChatRoomModel? chatRoomModel;
 
-  const ChatHomePage(
-      {super.key,
-      required this.currentUser,
-      required this.firebaseUser,
-      this.chatRoomModel});
+
+  const ChatHomePage({
+    super.key,
+    required this.currentUser,
+    required this.firebaseUser,
+  });
 
   @override
   ChatHomePageState createState() => ChatHomePageState();
@@ -38,66 +38,65 @@ class ChatHomePageState extends State<ChatHomePage>
     super.dispose();
   }
 
+  Future<bool> _onWillPop() async {
+    return await showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('Do you want to exit the app'),
+            actions: <Widget>[
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('No'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text('Yes'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (_) => SignUpPage()));
-          },
-          icon: Icon(Icons.add),
-        ),
-        title: ListTile(
-          title: Text(widget.currentUser.name ?? "not found"),
-          subtitle: Text(widget.currentUser.email ?? "not found"),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+
+          title: ListTile(
+            title: Text('Chat App')
           ),
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
+
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(icon: Icon(Icons.person)),
+              Tab(text: 'CHATS'),
+              Tab(text: 'SEARCH'),
+            ],
           ),
-        ],
-        bottom: TabBar(
+        ),
+        body: TabBarView(
           controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.person)),
-            Tab(text: 'CHATS'),
-            Tab(text: 'SEARCH'),
+          children: [
+            ProfilePage(
+              currentUser: widget.currentUser,
+            ),
+            ChatListPage(
+              currentUser: widget.currentUser,
+              firebaseUser: widget.firebaseUser,
+            ),
+            SearchPage(
+                currentUser: widget.currentUser,
+                firebaseUser: widget.firebaseUser),
           ],
         ),
+
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          ProfilePage(
-            currentUser: widget.currentUser,
-          ),
-          ChatListPage(
-            currentUser: widget.currentUser,
-            firebaseUser: widget.firebaseUser,
-          ),
-          SearchPage(
-              currentUser: widget.currentUser,
-              firebaseUser: widget.firebaseUser),
-        ],
-      ),
-      /*floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => SearchPage(
-                      currentUser: widget.currentUser,
-                      firebaseUser: widget.firebaseUser)));
-        },
-        child: const Icon(Icons.chat),
-      ),*/
     );
   }
 }

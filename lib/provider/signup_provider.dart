@@ -1,3 +1,4 @@
+import 'package:chat/main.dart';
 import 'package:chat/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,8 +61,13 @@ class SignUpProvider extends ChangeNotifier {
 
   Future<void> uploadData(UserCredential credential) async {
     String uid = credential.user!.uid;
+    String uniqueValue = uuid.v4();
+    String userName = uniqueValue.replaceAll(RegExp(r'[-\d]'), '');
     newUser = UserModel(
-        uid: uid, name: "", email: emailController.text.trim(), profilePic: "");
+        uid: uid,
+        name: userName,
+        email: emailController.text.trim(),
+        profilePic: "");
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)

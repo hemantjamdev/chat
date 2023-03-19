@@ -5,12 +5,11 @@ class FirebaseHelper {
   static Future<UserModel?> getUserById(String id) async {
     UserModel? userModel;
 
-      DocumentSnapshot snapshot =
-          await FirebaseFirestore.instance.collection('users').doc(id).get();
-      if (snapshot.data() != null) {
-        userModel = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
-      }
-      return userModel;
+    DocumentSnapshot snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(id).get();
+    if (snapshot.data() != null) {
+      userModel = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
     }
+    return userModel;
   }
-
+}

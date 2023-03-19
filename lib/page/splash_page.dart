@@ -56,22 +56,20 @@ class SplashPageState extends State<SplashPage>
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (_) => HomePage(
-                        currentUser: userModel,
-                        firebaseUser: user,
-                      )));
-        }else{
+                  builder: (_) =>
+                      HomePage(currentUser: userModel, firebaseUser: user)));
+        } else {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (_) =>  SignInPage()));
+              context, MaterialPageRoute(builder: (_) => SignInPage()));
         }
       } else {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) =>  SignInPage()));
+            context, MaterialPageRoute(builder: (_) => SignInPage()));
       }
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) =>  SignInPage()));
+          context, MaterialPageRoute(builder: (_) => SignInPage()));
     }
   }
 

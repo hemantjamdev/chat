@@ -51,7 +51,6 @@ class SignInPageState extends State<SignInPage> {
                         }
                         return null;
                       },
-                      //  focusNode: provider.emailFocus,
                       controller: provider.emailController,
                       decoration: const InputDecoration(
                         labelText: 'Email',

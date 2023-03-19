@@ -1,3 +1,3 @@
-class RoutesNames{
-  static const String signUpRoute="/sign_up";
+class RoutesNames {
+  static const String signUpRoute = "/sign_up";
 }

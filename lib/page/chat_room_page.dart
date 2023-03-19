@@ -27,14 +27,7 @@ class ChatRoomPage extends StatefulWidget {
 }
 
 class ChatRoomPageState extends State<ChatRoomPage> {
-  /*final List<Message> _messages = [
-    Message(sender: 'John', text: 'Hi there!', isMe: false),
-    Message(sender: 'Jane', text: 'Hey!', isMe: true),
-    Message(sender: 'John', text: 'How are you?', isMe: false),
-    Message(
-        sender: 'Jane', text: 'I\'m good, thanks. How about you?', isMe: true),
-    Message(sender: 'John', text: 'Doing well, thanks!', isMe: false),
-  ];*/
+
   final TextEditingController _messageController = TextEditingController();
 
   sendMessage() async {
@@ -50,14 +43,23 @@ class ChatRoomPageState extends State<ChatRoomPage> {
         .collection('messages')
         .doc(newMessage.messageId)
         .set(newMessage.toMap());
-    log('----- message collectin created-----');
+    ChatRoomModel chatRoomModel = ChatRoomModel(
+        chatRoomId: widget.chatRoom.chatRoomId,
+        lastMessage: _messageController.text,
+        participants: {
+          widget.currentUser.uid.toString(): true,
+          widget.targetUser.uid.toString(): true,
+        });
+    FirebaseFirestore.instance
+        .collection('chatrooms')
+        .doc(widget.chatRoom.chatRoomId)
+        .set(chatRoomModel.toMap());
     _messageController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    log("------currrent user name--${widget.currentUser.name}");
-    log("------target  user name--${widget.targetUser.name}");
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -87,7 +89,6 @@ class ChatRoomPageState extends State<ChatRoomPage> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
                 if (snapshot.hasData) {
-                  //log('${snapshot.data!.docs.first.data().toString()}---------');
                   QuerySnapshot? data = snapshot.data;
                   if (data!.docs.isNotEmpty) {
                     return ListView.builder(

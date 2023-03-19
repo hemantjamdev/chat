@@ -12,7 +12,8 @@ class SignInProvider extends ChangeNotifier {
   bool isLoading = false;
   bool obSecure = true;
   UserModel userModel = UserModel();
-UserCredential? credential;
+  UserCredential? credential;
+
   void changeObSecure() {
     obSecure = !obSecure;
     notifyListeners();
@@ -27,20 +28,15 @@ UserCredential? credential;
     FocusScope.of(context).unfocus();
     loading(true);
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-     /* UserCredential? credential;*/
-
       try {
         credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: emailController.text, password: passwordController.text);
-
         Fluttertoast.showToast(msg: 'Sign In successful');
-
         DocumentSnapshot userData = await FirebaseFirestore.instance
             .collection("users")
             .doc(credential!.user!.uid)
             .get();
         DocumentSnapshot snap = userData;
-
         userModel = UserModel.fromMap(snap.data() as Map<String, dynamic>);
         loading(false);
         return true;

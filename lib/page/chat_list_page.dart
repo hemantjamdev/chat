@@ -26,53 +26,60 @@ class ChatListPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.hasData) {
             QuerySnapshot data = snapshot.data as QuerySnapshot;
-            // if(data.data().){}
-            return ListView.builder(
-                itemCount: data.docs.length,
-                itemBuilder: (context, int index) {
-                  ChatRoomModel chatRoomModel = ChatRoomModel.fromMap(
-                      data.docs[index].data() as Map<String, dynamic>);
-                  Map<String, dynamic> participants =
-                      chatRoomModel.participants!;
-                  List<String> keys = participants.keys.toList();
-                  keys.remove(currentUser.uid);
-                  return FutureBuilder(
-                      future: FirebaseHelper.getUserById(keys.first),
-                      builder: (context, futureSnapshot) {
-                        if (futureSnapshot.connectionState ==
-                            ConnectionState.done) {
-                          UserModel? user = futureSnapshot.data;
-                          if (user != null) {
-                            return ListTile(
-                              onTap: () {
-                                Navigator.push(
+            if (data.docs.isNotEmpty) {
+              return ListView.builder(
+                  itemCount: data.docs.length,
+                  itemBuilder: (context, int index) {
+                    ChatRoomModel chatRoomModel = ChatRoomModel.fromMap(
+                        data.docs[index].data() as Map<String, dynamic>);
+                    Map<String, dynamic> participants =
+                        chatRoomModel.participants!;
+                    List<String> keys = participants.keys.toList();
+                    keys.remove(currentUser.uid);
+                    return FutureBuilder(
+                        future: FirebaseHelper.getUserById(keys.first),
+                        builder: (context, futureSnapshot) {
+                          if (futureSnapshot.connectionState ==
+                              ConnectionState.done) {
+                            UserModel? user = futureSnapshot.data;
+                            if (user != null) {
+                              return ListTile(
+                                onTap: () {
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => ChatRoomPage(
-                                            targetUser: user,
-                                            currentUser: currentUser,
-                                            chatRoom: chatRoomModel,
-                                            firebaseUser: firebaseUser)));
-                              },
-                              leading: CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(user.profilePic.toString()),
-                              ),
-                              title: Text(user.name.toString()),
-                              subtitle: (Text(chatRoomModel.lastMessage
-                                      .toString()
-                                      .isNotEmpty
-                                  ? chatRoomModel.lastMessage.toString()
-                                  : "say hi to your friend !")),
-                            );
+                                      builder: (context) => ChatRoomPage(
+                                          targetUser: user,
+                                          currentUser: currentUser,
+                                          chatRoom: chatRoomModel,
+                                          firebaseUser: firebaseUser),
+                                    ),
+                                  );
+                                },
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(user.profilePic.toString()),
+                                ),
+                                title: Text(user.name.toString()),
+                                subtitle: (Text(chatRoomModel.lastMessage
+                                        .toString()
+                                        .isNotEmpty
+                                    ? chatRoomModel.lastMessage.toString()
+                                    : "say hi to your friend !")),
+                              );
+                            } else {
+                              return Container();
+                            }
                           } else {
                             return Container();
                           }
-                        } else {
-                          return Container();
-                        }
-                      });
-                });
+                        });
+                  });
+            } else {
+              return const Center(
+                child: Text('your chats will be display here!'),
+              );
+            }
           } else if (snapshot.hasError) {
             return const Center(
               child: Text('error ! something went wrong'),

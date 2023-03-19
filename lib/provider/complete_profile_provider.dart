@@ -107,20 +107,13 @@ class CompleteProfileProvider extends ChangeNotifier {
           name: fullName,
           profilePic: imageUrl,
           email: userModel.email);
-      // userModel.profilePic = imageUrl;
-      //  userModel.name = fullName;
-
       await FirebaseFirestore.instance
           .collection("users")
           .doc(userModel.uid)
           .set(currentUser.toMap());
-
       loading(false);
-
       Fluttertoast.showToast(msg: "profile completed");
-
       notifyListeners();
-
       return true;
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());

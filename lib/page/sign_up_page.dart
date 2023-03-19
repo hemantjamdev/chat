@@ -1,3 +1,4 @@
+import 'package:chat/page/chat_home_page.dart';
 import 'package:chat/page/complete_profile_page.dart';
 import 'package:chat/provider/signup_provider.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,6 @@ class SignUpPageState extends State<SignUpPage> {
                         }
                         return null;
                       },
-                      //  focusNode: provider.emailFocus,
                       controller: provider.emailController,
                       decoration: const InputDecoration(
                         labelText: 'Email',
@@ -132,16 +132,54 @@ class SignUpPageState extends State<SignUpPage> {
                           provider.signUp(context: context).then(
                             (value) {
                               if (value!) {
-                                //Map<String, dynamic> data = {};
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => CompleteProfilePage(
-                                        firebaseUser:
-                                            provider.credential!.user!,
-                                        currentUser: provider.newUser),
-                                  ),
-                                );
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        actions: [
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        ChatHomePage(
+                                                            firebaseUser:
+                                                                provider
+                                                                    .credential!
+                                                                    .user!,
+                                                            currentUser:
+                                                                provider
+                                                                    .newUser),
+                                                  ),
+                                                );
+                                              },
+                                              child: Text("Skip for now")),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        CompleteProfilePage(
+                                                            firebaseUser:
+                                                                provider
+                                                                    .credential!
+                                                                    .user!,
+                                                            currentUser:
+                                                                provider
+                                                                    .newUser),
+                                                  ),
+                                                );
+                                              },
+                                              child: Text("continue"))
+                                        ],
+                                        content: Text(
+                                            "Account Created ! Want to complete profile ?"),
+                                      );
+                                    });
                               }
                             },
                           );
