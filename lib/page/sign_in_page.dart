@@ -1,5 +1,5 @@
 import 'package:chat/page/chat_home_page.dart';
-import 'package:chat/page/sign_up.dart';
+import 'package:chat/page/sign_up_page.dart';
 import 'package:chat/provider/signin_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

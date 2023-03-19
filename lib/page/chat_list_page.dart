@@ -1,10 +1,11 @@
 import 'package:chat/constants/firebase_helper.dart';
-import 'package:chat/model/chat_room.dart';
-import 'package:chat/model/user.dart';
-import 'package:chat/page/chat_room.dart';
+import 'package:chat/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../model/chat_room_model.dart';
+import 'chat_room_page.dart';
 
 class ChatListPage extends StatelessWidget {
   final UserModel currentUser;

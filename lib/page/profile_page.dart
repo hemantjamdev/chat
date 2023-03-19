@@ -1,5 +1,5 @@
-import 'package:chat/model/user.dart';
-import 'package:chat/page/sign_in.dart';
+import 'package:chat/model/user_model.dart';
+import 'package:chat/page/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

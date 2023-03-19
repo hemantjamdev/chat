@@ -1,8 +1,8 @@
-import 'package:chat/model/chat_room.dart';
-import 'package:chat/model/user.dart';
+import 'package:chat/model/chat_room_model.dart';
+import 'package:chat/model/user_model.dart';
 import 'package:chat/page/profile_page.dart';
-import 'package:chat/page/chat_list.dart';
-import 'package:chat/page/sign_up.dart';
+import 'package:chat/page/chat_list_page.dart';
+import 'package:chat/page/sign_up_page.dart';
 import 'package:chat/page/search_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

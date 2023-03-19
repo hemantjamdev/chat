@@ -1,7 +1,8 @@
-import 'package:chat/page/splash.dart';
+import 'package:chat/page/splash_page.dart';
 import 'package:chat/provider/complete_profile_provider.dart';
 import 'package:chat/provider/signin_provider.dart';
 import 'package:chat/provider/signup_provider.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

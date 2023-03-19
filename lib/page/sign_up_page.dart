@@ -1,4 +1,4 @@
-import 'package:chat/page/complete_profile.dart';
+import 'package:chat/page/complete_profile_page.dart';
 import 'package:chat/provider/signup_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

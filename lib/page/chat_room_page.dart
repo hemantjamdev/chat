@@ -1,8 +1,8 @@
 import 'dart:developer';
 
-import 'package:chat/model/chat_room.dart';
-import 'package:chat/model/message.dart';
-import 'package:chat/model/user.dart';
+import 'package:chat/model/chat_room_model.dart';
+import 'package:chat/model/message_model.dart';
+import 'package:chat/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

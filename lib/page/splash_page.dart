@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:chat/constants/firebase_helper.dart';
-import 'package:chat/model/user.dart';
-import 'package:chat/page/home.dart';
-import 'package:chat/page/sign_in.dart';
+import 'package:chat/page/home_page.dart';
+import 'package:chat/page/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import '../model/user_model.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -59,15 +60,18 @@ class SplashPageState extends State<SplashPage>
                         currentUser: userModel,
                         firebaseUser: user,
                       )));
+        }else{
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) =>  SignInPage()));
         }
       } else {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => const SignInPage()));
+            context, MaterialPageRoute(builder: (_) =>  SignInPage()));
       }
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const SignInPage()));
+          context, MaterialPageRoute(builder: (_) =>  SignInPage()));
     }
   }
 
