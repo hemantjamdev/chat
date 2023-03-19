@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:chat/model/chat_room_model.dart';
 import 'package:chat/model/message_model.dart';
@@ -70,7 +69,7 @@ class ChatRoomPageState extends State<ChatRoomPage> {
                         NetworkImage(widget.targetUser.profilePic.toString()),
                   )
                 : const Icon(Icons.person),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Text(widget.targetUser.name ?? "")

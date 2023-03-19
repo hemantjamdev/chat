@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'package:chat/constants/firebase_helper.dart';
 import 'package:chat/page/home_page.dart';
@@ -52,7 +54,6 @@ class SplashPageState extends State<SplashPage>
       if (user != null) {
         UserModel? userModel = await FirebaseHelper.getUserById(user.uid);
         if (userModel != null) {
-          // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -60,16 +61,16 @@ class SplashPageState extends State<SplashPage>
                       HomePage(currentUser: userModel, firebaseUser: user)));
         } else {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (_) => SignInPage()));
+              context, MaterialPageRoute(builder: (_) => const SignInPage()));
         }
       } else {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => SignInPage()));
+            context, MaterialPageRoute(builder: (_) => const SignInPage()));
       }
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => SignInPage()));
+          context, MaterialPageRoute(builder: (_) => const SignInPage()));
     }
   }
 

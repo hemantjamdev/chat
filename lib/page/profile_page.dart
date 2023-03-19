@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:chat/model/user_model.dart';
 import 'package:chat/page/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,16 +20,16 @@ class _ProfilePageState extends State<ProfilePage> {
           barrierDismissible: false,
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Are you sure?'),
-            content: Text('Do you want to exit the app'),
+            title: const Text('Are you sure?'),
+            content: const Text('Do you want to exit the app'),
             actions: <Widget>[
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
+                child: const Text('No'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Yes'),
+                child: const Text('Yes'),
               ),
             ],
           ),
@@ -53,31 +55,31 @@ class _ProfilePageState extends State<ProfilePage> {
                     NetworkImage(widget.currentUser.profilePic.toString()),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             ListTile(
-              leading: Icon(Icons.person),
+              leading: const Icon(Icons.person),
               tileColor: Colors.black12,
               title: Text(widget.currentUser.name.toString()),
               trailing: IconButton(
                 onPressed: () {},
-                icon: Icon(Icons.edit),
+                icon: const Icon(Icons.edit),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             ListTile(
               tileColor: Colors.black12,
-              leading: Icon(Icons.email_outlined),
+              leading: const Icon(Icons.email_outlined),
               title: Text(widget.currentUser.email.toString()),
               trailing: IconButton(
                 onPressed: () {},
-                icon: Icon(Icons.edit),
+                icon: const Icon(Icons.edit),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             ElevatedButton(
@@ -86,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   if (value) {
                     await FirebaseAuth.instance.signOut();
                     Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (_) => SignInPage()));
+                        MaterialPageRoute(builder: (_) => const SignInPage()));
                   }
                 });
               },
@@ -94,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+                children: const [
                   Icon(Icons.logout),
                   Text('LOGOUT'),
                 ],

@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 class SignInProvider extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final FocusNode emailFocus = FocusNode();
 
   final FocusNode passFocus = FocusNode();
   bool isLoading = false;
@@ -53,6 +54,7 @@ class SignInProvider extends ChangeNotifier {
   @override
   void dispose() {
     emailController.dispose();
+    emailFocus.dispose();
     passwordController.dispose();
     passFocus.dispose();
     super.dispose();

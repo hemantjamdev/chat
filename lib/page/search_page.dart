@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 
 import 'package:chat/model/chat_room_model.dart';
@@ -23,6 +25,7 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode searchFocus = FocusNode();
 
   Future<ChatRoomModel?> getChatRoom(UserModel targetUser) async {
     ChatRoomModel? existingChatRoom;
@@ -57,6 +60,12 @@ class SearchPageState extends State<SearchPage> {
   }
 
   @override
+  void dispose() {
+    searchFocus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
@@ -64,6 +73,10 @@ class SearchPageState extends State<SearchPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              onChanged: (String value) {
+                setState(() {});
+              },
+              focusNode: searchFocus,
               controller: _searchController,
               decoration: const InputDecoration(
                 hintText: 'Enter User Name',
@@ -79,21 +92,33 @@ class SearchPageState extends State<SearchPage> {
             child: StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('users')
-                    .where('name', isEqualTo: _searchController.text)
-                    .where('name', whereNotIn: [widget.currentUser.name,""],)
+                    .where(
+                      'uid',
+                      isNotEqualTo: widget.currentUser.uid,
+                    )
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.active) {
                     if (snapshot.hasData) {
-                      QuerySnapshot doc = snapshot.data as QuerySnapshot;
-                      if (doc.docs.isNotEmpty) {
+                      List<UserModel> userList = [];
+                      QuerySnapshot querySnapshot =
+                          snapshot.data as QuerySnapshot;
+                      for (var element in querySnapshot.docs) {
+                        UserModel user = UserModel.fromMap(
+                            element.data() as Map<String, dynamic>);
+                        if (user.name.toString() != "" &&
+                            user.name
+                                .toString()
+                                .contains(_searchController.text.trim()) &&
+                            _searchController.text.isNotEmpty) {
+                          userList.add(user);
+                        }
+                      }
+                      if (userList.isNotEmpty) {
                         return ListView.builder(
-                            itemCount: doc.size,
+                            itemCount: userList.length,
                             itemBuilder: (context, int index) {
-                              Map<String, dynamic> userData = doc.docs[index]
-                                  .data() as Map<String, dynamic>;
-                              UserModel searchedUser =
-                                  UserModel.fromMap(userData);
+                              UserModel searchedUser = userList[index];
                               return ListTile(
                                 leading: searchedUser.profilePic.toString() !=
                                         ""
@@ -132,7 +157,7 @@ class SearchPageState extends State<SearchPage> {
                               );
                             });
                       } else {
-                        return const Center(child: Text("no result found"));
+                        return const Center(child: Text("no result founded"));
                       }
                     } else {
                       return const Center(child: Text("no result found"));

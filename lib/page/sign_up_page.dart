@@ -43,6 +43,7 @@ class SignUpPageState extends State<SignUpPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextFormField(
+                      focusNode: provider.emailFocus,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter your email';
@@ -155,7 +156,7 @@ class SignUpPageState extends State<SignUpPage> {
                                                   ),
                                                 );
                                               },
-                                              child: Text("Skip for now")),
+                                              child: const Text("Skip for now")),
                                           ElevatedButton(
                                               onPressed: () {
                                                 Navigator.pop(context);
@@ -174,9 +175,9 @@ class SignUpPageState extends State<SignUpPage> {
                                                   ),
                                                 );
                                               },
-                                              child: Text("continue"))
+                                              child: const Text("continue"))
                                         ],
-                                        content: Text(
+                                        content: const Text(
                                             "Account Created ! Want to complete profile ?"),
                                       );
                                     });
@@ -198,9 +199,9 @@ class SignUpPageState extends State<SignUpPage> {
                           const Text("Already have an account ? "),
                           GestureDetector(
                               onTap: () =>
-                                  Navigator.pushNamed(context, '/sign_in'),
+                                  Navigator.pop(context,),
                               child: const Text(
-                                'Sign Ip',
+                                'Sign in',
                                 style: TextStyle(color: Colors.blue),
                               ))
                         ],

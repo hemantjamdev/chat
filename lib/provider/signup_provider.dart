@@ -9,7 +9,7 @@ class SignUpProvider extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController cPasswordController = TextEditingController();
-
+final FocusNode emailFocus=FocusNode();
   final FocusNode passFocus = FocusNode();
   final FocusNode cPasswordFocus = FocusNode();
   UserModel newUser = UserModel();
@@ -81,7 +81,7 @@ class SignUpProvider extends ChangeNotifier {
     emailController.dispose();
     passwordController.dispose();
     cPasswordController.dispose();
-
+emailFocus.dispose();
     passFocus.dispose();
     cPasswordFocus.dispose();
     super.dispose();

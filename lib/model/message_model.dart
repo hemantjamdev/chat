@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MessageModel {
@@ -13,7 +11,6 @@ class MessageModel {
       {this.sender, this.text, this.seen, this.createdOn, this.messageId});
 
   static MessageModel fromMap(Map<String, dynamic> map) {
-    log('---from map method called this is data=====>>>>${map}');
     return MessageModel(
         messageId: map['messageId'],
         sender: map['sender'],

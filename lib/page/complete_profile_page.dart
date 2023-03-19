@@ -35,16 +35,16 @@ class CompleteProfilePageState extends State<CompleteProfilePage> {
       barrierDismissible: false,
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Are you sure?'),
-            content: Text('Do you want to exit the app'),
+            title: const Text('Are you sure?'),
+            content: const Text('Do you want to exit the app'),
             actions: <Widget>[
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
+                child: const Text('No'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Yes'),
+                child: const Text('Yes'),
               ),
             ],
           ),

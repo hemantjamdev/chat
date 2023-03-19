@@ -40,6 +40,7 @@ class SignInPageState extends State<SignInPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextFormField(
+                      focusNode: provider.emailFocus,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter your email';

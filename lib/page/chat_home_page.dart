@@ -1,8 +1,6 @@
-import 'package:chat/model/chat_room_model.dart';
 import 'package:chat/model/user_model.dart';
 import 'package:chat/page/profile_page.dart';
 import 'package:chat/page/chat_list_page.dart';
-import 'package:chat/page/sign_up_page.dart';
 import 'package:chat/page/search_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,16 +41,16 @@ class ChatHomePageState extends State<ChatHomePage>
           barrierDismissible: false,
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Are you sure?'),
-            content: Text('Do you want to exit the app'),
+            title: const Text('Are you sure?'),
+            content: const Text('Do you want to exit the app'),
             actions: <Widget>[
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
+                child: const Text('No'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Yes'),
+                child: const Text('Yes'),
               ),
             ],
           ),
@@ -67,7 +65,7 @@ class ChatHomePageState extends State<ChatHomePage>
       child: Scaffold(
         appBar: AppBar(
 
-          title: ListTile(
+          title: const ListTile(
             title: Text('Chat App')
           ),
 
