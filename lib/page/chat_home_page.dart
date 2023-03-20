@@ -64,7 +64,7 @@ class ChatHomePageState extends State<ChatHomePage>
       onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
-
+automaticallyImplyLeading: false,
           title: const ListTile(
             title: Text('Chat App')
           ),
